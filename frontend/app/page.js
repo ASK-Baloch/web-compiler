@@ -164,7 +164,7 @@ function LexerComponent() {
 
   const analyze = async () => {
     try {
-      const res = await axios.post('https://web-compiler-backend.vercel.app//api/lex', { code });
+      const res = await axios.post('https://web-compiler-backend.vercel.app/api/lex', { code });
       setTokens(res.data.tokens);
     } catch (e) { alert("Error: Is Backend Running?"); }
   };
@@ -213,7 +213,7 @@ function ParserComponent() {
 
   const parse = async () => {
     try {
-      const res = await axios.post('https://web-compiler-backend.vercel.app//api/parse', { expression: expr, mode });
+      const res = await axios.post('https://web-compiler-backend.vercel.app/api/parse', { expression: expr, mode });
       setResult(res.data.result);
     } catch (e) { alert("Backend Error"); }
   };
@@ -292,7 +292,7 @@ function ChatComponent({ history, setHistory }) {
     setLoading(true);
 
     try {
-      const res = await axios.post('https://web-compiler-backend.vercel.app//api/chat', { message: msg });
+      const res = await axios.post('https://web-compiler-backend.vercel.app/api/chat', { message: msg });
       setHistory(prev => [...prev, { role: 'bot', text: res.data.reply }]);
     } catch (e) {
       setHistory(prev => [...prev, { role: 'bot', text: "Error: Could not reach API." }]);
