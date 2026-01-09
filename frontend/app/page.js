@@ -254,7 +254,7 @@ function ParserComponent() {
         error_msg: result 
       });
       setExpr(res.data.fixed_code); // Update input with fixed code
-      setResult(""); // Clear error
+      setResult(""); // Clear errorF
     } catch (e) { alert("Could not auto-fix"); }
     setIsFixing(false);
   };

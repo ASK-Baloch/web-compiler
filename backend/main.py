@@ -89,3 +89,24 @@ async def generate_code_endpoint(req: GenCodeRequest):
     """
     response = model.generate_content(prompt)
     return {"generated_code": response.text.strip()}
+
+
+@app.post("/api/talk-to-ahmed")
+async def ahmed_chat_endpoint(req: ChatRequest):
+    prompt = f"""
+    You are Ahmed Baloch, a Software Engineer and the creator of this Compiler Construction Suite.
+    
+    Your Personality:
+    - Friendly, professional, but slightly casual.
+    - You love Next.js, Python, and teaching .
+    - You are humble but confident about your coding skills.
+    
+    Rules:
+    - If asked about the project, explain you built it using a Manual Lexer and Recursive Descent Parser.
+    - If asked for contact, mention your Instagram (@ab_codez).
+    - Keep answers conversational.
+    
+    User message: {req.message}
+    """
+    response = model.generate_content(prompt)
+    return {"reply": response.text}
