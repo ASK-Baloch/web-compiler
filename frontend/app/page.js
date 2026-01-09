@@ -161,18 +161,43 @@ function TabButton({ id, icon, label, active, set }) {
 function LexerComponent() {
   const [code, setCode] = useState('int count = 10');
   const [tokens, setTokens] = useState([]);
+  const [isGenerating, setIsGenerating] = useState(false); // State for loading
 
   const analyze = async () => {
     try {
       const res = await axios.post('https://web-compiler-backend.vercel.app/api/lex', { code });
       setTokens(res.data.tokens);
-    } catch (e) { alert("Error: Is Backend Running?"); }
+    } catch (e) { alert("Backend Error"); }
+  };
+
+  // NEW: Generate Code using AI
+  const generateCode = async () => {
+    const prompt = prompt("Describe the code you want (e.g., 'declare an integer x equals 50')");
+    if (!prompt) return;
+    
+    setIsGenerating(true);
+    try {
+      const res = await axios.post('https://web-compiler-backend.vercel.app/api/ai-generate', { prompt });
+      // Remove markdown quotes if AI adds them
+      let cleanCode = res.data.generated_code.replace(/```/g, '').replace('cpp', '').trim();
+      setCode(cleanCode);
+    } catch (e) { alert("AI Generation Failed"); }
+    setIsGenerating(false);
   };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full">
-      <div className="flex flex-col h-full">
-        <label className="mb-2 text-sm font-bold text-blue-300 uppercase tracking-wider">Source Code</label>
+      <div className="flex flex-col h-full relative">
+        <label className="mb-2 text-sm font-bold text-blue-300 uppercase tracking-wider flex justify-between">
+          <span>Source Code</span>
+          <button 
+            onClick={generateCode}
+            disabled={isGenerating}
+            className="text-xs bg-purple-600 hover:bg-purple-500 text-white px-2 py-1 rounded transition-colors"
+          >
+            {isGenerating ? "Generating..." : "✨ AI Generate"}
+          </button>
+        </label>
         <textarea
           className="flex-1 bg-slate-950 border border-slate-600 rounded-xl p-4 font-mono text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none shadow-inner"
           value={code}
@@ -184,6 +209,7 @@ function LexerComponent() {
         </button>
       </div>
       <div className="flex flex-col h-full">
+        {/* Token Output (Same as before) */}
         <label className="mb-2 text-sm font-bold text-blue-300 uppercase tracking-wider">Tokens</label>
         <div className="flex-1 bg-slate-950 rounded-xl border border-slate-700 overflow-hidden flex flex-col">
           <div className="flex bg-slate-900 p-3 text-xs font-bold text-slate-400 border-b border-slate-700">
@@ -197,7 +223,6 @@ function LexerComponent() {
                 <span className="w-1/2 text-slate-200 pl-2">{t.value}</span>
               </div>
             ))}
-            {tokens.length === 0 && <div className="h-full flex items-center justify-center text-slate-600 italic">No tokens generated</div>}
           </div>
         </div>
       </div>
@@ -210,12 +235,28 @@ function ParserComponent() {
   const [method, setMethod] = useState('SDD');
   const [mode, setMode] = useState('POSTFIX');
   const [result, setResult] = useState('');
+  const [isFixing, setIsFixing] = useState(false);
 
   const parse = async () => {
     try {
-      const res = await axios.post('https://web-compiler-backend.vercel.app/api/parse', { expression: expr, mode });
+      const res = await axios.post('[https://web-compiler-backend.vercel.app/api/parse](https://web-compiler-backend.vercel.app/api/parse)', { expression: expr, mode });
       setResult(res.data.result);
     } catch (e) { alert("Backend Error"); }
+  };
+
+  // NEW: Fix Error Function
+  const fixError = async () => {
+    if (!result.includes("Error")) return;
+    setIsFixing(true);
+    try {
+      const res = await axios.post('[https://web-compiler-backend.vercel.app/api/ai-fix](https://web-compiler-backend.vercel.app/api/ai-fix)', { 
+        broken_code: expr, 
+        error_msg: result 
+      });
+      setExpr(res.data.fixed_code); // Update input with fixed code
+      setResult(""); // Clear error
+    } catch (e) { alert("Could not auto-fix"); }
+    setIsFixing(false);
   };
 
   return (
@@ -224,38 +265,27 @@ function ParserComponent() {
         <label className="block text-xs font-bold text-blue-300 uppercase tracking-wider text-center">1. Input Expression</label>
         <input
           type="text"
-          className="w-full bg-slate-950 border border-slate-600 rounded-xl p-4 font-mono text-xl text-center focus:ring-2 focus:ring-blue-500 outline-none text-white shadow-inner"
+          className={`w-full bg-slate-950 border ${result.includes('Error') ? 'border-red-500' : 'border-slate-600'} rounded-xl p-4 font-mono text-xl text-center focus:ring-2 focus:ring-blue-500 outline-none text-white shadow-inner transition-colors`}
           value={expr}
           onChange={(e) => setExpr(e.target.value)}
         />
       </div>
 
+      {/* Buttons (Same as before) */}
       <div className="flex flex-row gap-6 w-full max-w-lg">
         <div className="flex-1 space-y-2">
-          <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider text-center">2. Select Method</label>
-          <div className="flex flex-col bg-slate-900 p-1 rounded-xl border border-slate-700">
+           {/* Method Buttons */}
+           <div className="flex flex-col bg-slate-900 p-1 rounded-xl border border-slate-700">
             {['SDD', 'SDT'].map((m) => (
-              <button
-                key={m}
-                onClick={() => setMethod(m)}
-                className={`py-2 rounded-lg text-sm font-bold transition-all ${method === m ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-800'}`}
-              >
-                {m === 'SDD' ? 'Syntax Directed' : 'Translation Scheme'}
-              </button>
+              <button key={m} onClick={() => setMethod(m)} className={`py-2 rounded-lg text-sm font-bold transition-all ${method === m ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'}`}>{m}</button>
             ))}
           </div>
         </div>
         <div className="flex-1 space-y-2">
-          <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider text-center">3. Select Conversion</label>
+          {/* Mode Buttons */}
           <div className="flex flex-col bg-slate-900 p-1 rounded-xl border border-slate-700">
             {['POSTFIX', 'PREFIX'].map((m) => (
-              <button
-                key={m}
-                onClick={() => setMode(m)}
-                className={`py-2 rounded-lg text-sm font-bold transition-all ${mode === m ? 'bg-purple-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-800'}`}
-              >
-                To {m}
-              </button>
+              <button key={m} onClick={() => setMode(m)} className={`py-2 rounded-lg text-sm font-bold transition-all ${mode === m ? 'bg-purple-600 text-white' : 'text-slate-400 hover:text-white'}`}>To {m}</button>
             ))}
           </div>
         </div>
@@ -265,16 +295,31 @@ function ParserComponent() {
         <RefreshCw size={20} /> <span>Parse Using {method}</span>
       </button>
 
+      {/* RESULT DISPLAY WITH AUTO-FIX BUTTON */}
       {result && (
-        <div className={`mt-4 p-6 rounded-xl border w-full max-w-2xl text-center animate-in slide-in-from-bottom-5 duration-300 ${result.includes('Error') ? 'bg-red-950/40 border-red-500/50 text-red-200' : 'bg-green-950/40 border-green-500/50 text-green-200'}`}>
+        <div className={`mt-4 p-6 rounded-xl border w-full max-w-2xl text-center animate-in slide-in-from-bottom-5 duration-300 relative ${result.includes('Error') ? 'bg-red-950/40 border-red-500/50 text-red-200' : 'bg-green-950/40 border-green-500/50 text-green-200'}`}>
           <h3 className="text-xs font-bold opacity-70 mb-2 uppercase tracking-widest">{result.includes('Error') ? 'Parsing Failed' : 'Parsing Successful'}</h3>
           <p className="font-mono text-lg md:text-xl font-bold break-all">{result}</p>
+          
+          {/* SHOW FIX BUTTON ONLY ON ERROR */}
+          {result.includes('Error') && (
+            <button 
+              onClick={fixError}
+              disabled={isFixing}
+              className="mt-4 bg-white text-red-600 px-4 py-2 rounded-lg font-bold text-sm hover:bg-slate-100 transition-colors flex items-center gap-2 mx-auto"
+            >
+              {isFixing ? "Fixing..." : (
+                <>
+                  <BrainCircuit size={16} /> Auto-Fix with AI
+                </>
+              )}
+            </button>
+          )}
         </div>
       )}
     </div>
   );
 }
-
 function ChatComponent({ history, setHistory }) {
   const [msg, setMsg] = useState('');
   const [loading, setLoading] = useState(false);
