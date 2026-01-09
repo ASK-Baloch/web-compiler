@@ -3,9 +3,10 @@ import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { 
   Terminal, Code, Play, RefreshCw, X, Send, Bot, 
-  Github, Instagram, ExternalLink, BrainCircuit 
+  Github, Instagram, ExternalLink, BrainCircuit, MessageCircle 
 } from 'lucide-react';
 
+// --- MAIN HOME COMPONENT ---
 export default function Home() {
   const [activeTab, setActiveTab] = useState('lexer');
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -23,10 +24,14 @@ export default function Home() {
       <header className="relative bg-slate-950 border-b border-slate-800 p-6 shadow-2xl z-40">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           
-          {/* Spacer for centering */}
-          <div className="w-12 hidden md:block"></div>
+          {/* 1. TALK TO AHMED AI BUTTON (Left Side) */}
+          <div className="mr-4 hidden md:block w-12">
+             <a href="/ahmed" className="text-xs font-mono text-green-400 border border-green-500 px-3 py-1 rounded hover:bg-green-500/10 transition-all flex items-center gap-2 w-max">
+                <Terminal size={12} /> TALK_TO_DEV_AI
+             </a>
+          </div>
 
-          {/* Title */}
+          {/* 2. Main Title */}
           <div className="text-center">
             <h1 className="text-2xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 mb-2">
               Compiler Construction Suite By Ahmed Baloch
@@ -34,13 +39,12 @@ export default function Home() {
             <p className="text-slate-400 text-xs md:text-base">Manual Lexer & Recursive Descent Parser</p>
           </div>
 
-          {/* Avatar / Profile Section */}
+          {/* 3. Avatar / Profile Section */}
           <div className="relative w-12 flex justify-end">
             <button 
               onClick={() => setIsProfileOpen(!isProfileOpen)}
               className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-blue-500 hover:border-blue-400 transition-all shadow-[0_0_15px_rgba(59,130,246,0.5)] active:scale-95"
             >
-              {/* Ensure 'avatar.jpg' is in your public folder */}
               <img src="/avatar.jpg" alt="Profile" className="object-cover w-full h-full"/>
             </button>
 
@@ -85,62 +89,65 @@ export default function Home() {
       <footer className="w-full bg-slate-950 border-t border-slate-800 pt-10 pb-8 mt-12 relative z-10">
         <div className="max-w-4xl mx-auto text-center space-y-6">
           
-          {/* Copyright */}
           <p className="text-slate-500 text-sm">
             &copy; {new Date().getFullYear()} Compiler Construction Suite. All rights reserved.
           </p>
 
-          {/* Special Mentions Section (Gold Theme) */}
+          {/* Special Mentions */}
           <div className="flex flex-col items-center justify-center space-y-2">
             <span className="text-xs font-bold text-slate-600 uppercase tracking-[0.2em]">Special Mentions</span>
             <h2 className="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-600 drop-shadow-sm font-serif py-1">
               Sir Nauman Qadeer
             </h2>
           </div>
+
+          {/* WhatsApp Link */}
+          <div className="flex justify-center pt-2">
+            <a 
+              href="https://wa.me/923331234567" // REPLACE WITH YOUR NUMBER
+              target="_blank" 
+              rel="noreferrer"
+              className="flex items-center gap-2 px-4 py-2 rounded-full border border-slate-700 bg-slate-900 hover:bg-green-900/20 hover:border-green-500 text-slate-400 hover:text-green-400 transition-all group"
+            >
+              <MessageCircle size={16} /> <span className="text-xs font-bold">Chat on WhatsApp</span>
+            </a>
+          </div>
+
+          <div className="flex items-center justify-center gap-2 opacity-40 hover:opacity-100 transition-opacity pt-4">
+            <span className="text-xs text-slate-600">Built with</span>
+            <img src="/next.svg" alt="Next.js" className="h-4 invert" />
+          </div>
         </div>
       </footer>
 
       {/* --- FLOATING CHATBOT --- */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end space-y-4">
-        
-        {/* Chat Window */}
         {isChatOpen && (
           <div className="w-[350px] h-[500px] bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-10 fade-in duration-300">
             <div className="bg-blue-600 p-4 flex justify-between items-center text-white shrink-0">
               <div className="flex items-center gap-2">
-                <BrainCircuit size={20} /> {/* AI Icon in header too */}
-                <span className="font-bold">CC Professor</span>
+                <BrainCircuit size={20} /> <span className="font-bold">CC Professor</span>
               </div>
-              <button onClick={() => setIsChatOpen(false)} className="hover:bg-blue-700 p-1 rounded">
-                <X size={18} />
-              </button>
+              <button onClick={() => setIsChatOpen(false)} className="hover:bg-blue-700 p-1 rounded"><X size={18} /></button>
             </div>
             <ChatComponent history={chatHistory} setHistory={setChatHistory} />
           </div>
         )}
 
-        {/* Floating Button with AI Brain Icon */}
         <button 
           onClick={() => setIsChatOpen(!isChatOpen)}
           className="h-14 w-14 bg-blue-600 hover:bg-blue-500 text-white rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110 active:scale-95 group"
         >
-          {isChatOpen ? (
-            <X size={28} />
-          ) : (
-            // The New AI Brain Icon
-            <BrainCircuit size={28} className="group-hover:animate-pulse" />
-          )}
+          {isChatOpen ? <X size={28} /> : <BrainCircuit size={28} className="group-hover:animate-pulse" />}
         </button>
       </div>
 
-      {/* Backdrop for profile popup */}
       {isProfileOpen && <div className="fixed inset-0 z-30" onClick={() => setIsProfileOpen(false)} />}
-
     </div>
   );
 }
 
-// --- SUB COMPONENTS ---
+// --- SUB COMPONENTS (UPDATED WITH NEW API URL) ---
 
 function TabButton({ id, icon, label, active, set }) {
   return (
@@ -152,8 +159,7 @@ function TabButton({ id, icon, label, active, set }) {
         : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'
       }`}
     >
-      {icon}
-      <span>{label}</span>
+      {icon} <span>{label}</span>
     </button>
   );
 }
@@ -161,27 +167,27 @@ function TabButton({ id, icon, label, active, set }) {
 function LexerComponent() {
   const [code, setCode] = useState('int count = 10');
   const [tokens, setTokens] = useState([]);
-  const [isGenerating, setIsGenerating] = useState(false); // State for loading
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const analyze = async () => {
     try {
+      // UPDATED URL
       const res = await axios.post('https://web-compiler-backend.vercel.app/api/lex', { code });
       setTokens(res.data.tokens);
-    } catch (e) { alert("Backend Error"); }
+    } catch (e) { alert(`Lexer Error: ${e.message}`); }
   };
 
-  // NEW: Generate Code using AI
   const generateCode = async () => {
-    const prompt = prompt("Describe the code you want (e.g., 'declare an integer x equals 50')");
-    if (!prompt) return;
+    const userInput = window.prompt("Describe the code (e.g., 'declare int x = 50')");
+    if (!userInput) return;
     
     setIsGenerating(true);
     try {
-      const res = await axios.post('https://web-compiler-backend.vercel.app/api/ai-generate', { prompt });
-      // Remove markdown quotes if AI adds them
-      let cleanCode = res.data.generated_code.replace(/```/g, '').replace('cpp', '').trim();
+      // UPDATED URL
+      const res = await axios.post('https://web-compiler-backend.vercel.app/api/ai-generate', { prompt: userInput });
+      let cleanCode = res.data.generated_code.replace(/```/g, '').replace('cpp', '').replace('pascal', '').trim();
       setCode(cleanCode);
-    } catch (e) { alert("AI Generation Failed"); }
+    } catch (e) { alert(`AI Error: ${e.message}`); }
     setIsGenerating(false);
   };
 
@@ -190,16 +196,12 @@ function LexerComponent() {
       <div className="flex flex-col h-full relative">
         <label className="mb-2 text-sm font-bold text-blue-300 uppercase tracking-wider flex justify-between">
           <span>Source Code</span>
-          <button 
-            onClick={generateCode}
-            disabled={isGenerating}
-            className="text-xs bg-purple-600 hover:bg-purple-500 text-white px-2 py-1 rounded transition-colors"
-          >
+          <button onClick={generateCode} disabled={isGenerating} className="text-xs bg-purple-600 hover:bg-purple-500 text-white px-2 py-1 rounded transition-colors">
             {isGenerating ? "Generating..." : "✨ AI Generate"}
           </button>
         </label>
         <textarea
-          className="flex-1 bg-slate-950 border border-slate-600 rounded-xl p-4 font-mono text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none shadow-inner"
+          className="flex-1 bg-slate-950 border border-slate-600 rounded-xl p-4 font-mono text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none shadow-inner text-white"
           value={code}
           onChange={(e) => setCode(e.target.value)}
           spellCheck="false"
@@ -209,7 +211,6 @@ function LexerComponent() {
         </button>
       </div>
       <div className="flex flex-col h-full">
-        {/* Token Output (Same as before) */}
         <label className="mb-2 text-sm font-bold text-blue-300 uppercase tracking-wider">Tokens</label>
         <div className="flex-1 bg-slate-950 rounded-xl border border-slate-700 overflow-hidden flex flex-col">
           <div className="flex bg-slate-900 p-3 text-xs font-bold text-slate-400 border-b border-slate-700">
@@ -239,27 +240,25 @@ function ParserComponent() {
 
   const parse = async () => {
     try {
-      const res = await axios.post('[https://web-compiler-backend.vercel.app/api/parse](https://web-compiler-backend.vercel.app/api/parse)', { expression: expr, mode });
+      // UPDATED URL
+      const res = await axios.post('https://web-compiler-backend.vercel.app/api/parse', { expression: expr, mode });
       setResult(res.data.result);
-    } catch (e) { alert("Backend Error"); }
+    } catch (e) { alert(`Backend Error: ${e.message}`); }
   };
 
-  // NEW: Fix Error Function
   const fixError = async () => {
     if (!result.includes("Error")) return;
     setIsFixing(true);
     try {
-      const res = await axios.post('[https://web-compiler-backend.vercel.app/api/ai-fix](https://web-compiler-backend.vercel.app/api/ai-fix)', { 
-        broken_code: expr, 
-        error_msg: result 
-      });
-      setExpr(res.data.fixed_code); // Update input with fixed code
-      setResult(""); // Clear errorF
-    } catch (e) { alert("Could not auto-fix"); }
+      // UPDATED URL
+      const res = await axios.post('https://web-compiler-backend.vercel.app/api/ai-fix', { broken_code: expr, error_msg: result });
+      setExpr(res.data.fixed_code);
+      setResult("");
+    } catch (e) { alert(`Auto-fix failed: ${e.message}`); }
     setIsFixing(false);
   };
 
-  return (
+  return ( 
     <div className="flex flex-col items-center h-full py-6 space-y-6">
       <div className="w-full max-w-lg space-y-2">
         <label className="block text-xs font-bold text-blue-300 uppercase tracking-wider text-center">1. Input Expression</label>
@@ -271,10 +270,8 @@ function ParserComponent() {
         />
       </div>
 
-      {/* Buttons (Same as before) */}
       <div className="flex flex-row gap-6 w-full max-w-lg">
         <div className="flex-1 space-y-2">
-           {/* Method Buttons */}
            <div className="flex flex-col bg-slate-900 p-1 rounded-xl border border-slate-700">
             {['SDD', 'SDT'].map((m) => (
               <button key={m} onClick={() => setMethod(m)} className={`py-2 rounded-lg text-sm font-bold transition-all ${method === m ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'}`}>{m}</button>
@@ -282,7 +279,6 @@ function ParserComponent() {
           </div>
         </div>
         <div className="flex-1 space-y-2">
-          {/* Mode Buttons */}
           <div className="flex flex-col bg-slate-900 p-1 rounded-xl border border-slate-700">
             {['POSTFIX', 'PREFIX'].map((m) => (
               <button key={m} onClick={() => setMode(m)} className={`py-2 rounded-lg text-sm font-bold transition-all ${mode === m ? 'bg-purple-600 text-white' : 'text-slate-400 hover:text-white'}`}>To {m}</button>
@@ -295,24 +291,14 @@ function ParserComponent() {
         <RefreshCw size={20} /> <span>Parse Using {method}</span>
       </button>
 
-      {/* RESULT DISPLAY WITH AUTO-FIX BUTTON */}
       {result && (
         <div className={`mt-4 p-6 rounded-xl border w-full max-w-2xl text-center animate-in slide-in-from-bottom-5 duration-300 relative ${result.includes('Error') ? 'bg-red-950/40 border-red-500/50 text-red-200' : 'bg-green-950/40 border-green-500/50 text-green-200'}`}>
           <h3 className="text-xs font-bold opacity-70 mb-2 uppercase tracking-widest">{result.includes('Error') ? 'Parsing Failed' : 'Parsing Successful'}</h3>
           <p className="font-mono text-lg md:text-xl font-bold break-all">{result}</p>
           
-          {/* SHOW FIX BUTTON ONLY ON ERROR */}
           {result.includes('Error') && (
-            <button 
-              onClick={fixError}
-              disabled={isFixing}
-              className="mt-4 bg-white text-red-600 px-4 py-2 rounded-lg font-bold text-sm hover:bg-slate-100 transition-colors flex items-center gap-2 mx-auto"
-            >
-              {isFixing ? "Fixing..." : (
-                <>
-                  <BrainCircuit size={16} /> Auto-Fix with AI
-                </>
-              )}
+            <button onClick={fixError} disabled={isFixing} className="mt-4 bg-white text-red-600 px-4 py-2 rounded-lg font-bold text-sm hover:bg-slate-100 transition-colors flex items-center gap-2 mx-auto">
+              {isFixing ? "Fixing..." : <><RefreshCw size={16} /> Auto-Fix with AI</>}
             </button>
           )}
         </div>
@@ -320,6 +306,7 @@ function ParserComponent() {
     </div>
   );
 }
+
 function ChatComponent({ history, setHistory }) {
   const [msg, setMsg] = useState('');
   const [loading, setLoading] = useState(false);
@@ -337,6 +324,7 @@ function ChatComponent({ history, setHistory }) {
     setLoading(true);
 
     try {
+      // UPDATED URL
       const res = await axios.post('https://web-compiler-backend.vercel.app/api/chat', { message: msg });
       setHistory(prev => [...prev, { role: 'bot', text: res.data.reply }]);
     } catch (e) {
