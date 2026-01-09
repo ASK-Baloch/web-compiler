@@ -93,18 +93,18 @@ export default function Home() {
             &copy; {new Date().getFullYear()} Compiler Construction Suite. All rights reserved.
           </p>
 
-          {/* Special Mentions */}
+          {/* Special Mentions
           <div className="flex flex-col items-center justify-center space-y-2">
             <span className="text-xs font-bold text-slate-600 uppercase tracking-[0.2em]">Special Mentions</span>
             <h2 className="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-600 drop-shadow-sm font-serif py-1">
               Sir Nauman Qadeer
             </h2>
-          </div>
+          </div> */}
 
           {/* WhatsApp Link */}
           <div className="flex justify-center pt-2">
             <a 
-              href="https://wa.me/923331234567" // REPLACE WITH YOUR NUMBER
+              href="https://wa.me/923299977765" 
               target="_blank" 
               rel="noreferrer"
               className="flex items-center gap-2 px-4 py-2 rounded-full border border-slate-700 bg-slate-900 hover:bg-green-900/20 hover:border-green-500 text-slate-400 hover:text-green-400 transition-all group"
@@ -113,10 +113,7 @@ export default function Home() {
             </a>
           </div>
 
-          <div className="flex items-center justify-center gap-2 opacity-40 hover:opacity-100 transition-opacity pt-4">
-            <span className="text-xs text-slate-600">Built with</span>
-            <img src="/next.svg" alt="Next.js" className="h-4 invert" />
-          </div>
+         
         </div>
       </footer>
 
