@@ -25,7 +25,7 @@ genai.configure(api_key=GEMINI_KEY)
 # new api key added
 
 # Using the latest Flash model as per your requirements
-model = genai.GenerativeModel("models/gemini-2.0-flash")
+model = genai.GenerativeModel("models/gemini-1.5-flash")
 
 # --- DATA MODELS ---
 class ChatRequest(BaseModel):
