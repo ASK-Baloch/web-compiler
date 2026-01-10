@@ -22,6 +22,7 @@ GEMINI_KEY = os.getenv("GEMINI_KEY")
 if not GEMINI_KEY:
     raise RuntimeError("GEMINI_KEY not set in environment. Add it to your .env or export it.")
 genai.configure(api_key=GEMINI_KEY)
+# new api key added
 
 # Using the latest Flash model as per your requirements
 model = genai.GenerativeModel("models/gemini-2.5-flash")
@@ -89,6 +90,7 @@ async def generate_code_endpoint(req: GenCodeRequest):
     """
     response = model.generate_content(prompt)
     return {"generated_code": response.text.strip()}
+
 
 
 @app.post("/api/talk-to-ahmed")
